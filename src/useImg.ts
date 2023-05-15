@@ -14,9 +14,10 @@ function imgPromise(src: string): Promise<string> {
 export interface useImageParams {
   loadImg?: (src: string) => Promise<string>;
   src: string;
+  onCallback?: (data: string, err?: Error) => void;
 }
 
-function useImage({ loadImg = imgPromise, src }: useImageParams): {
+function useImage({ loadImg = imgPromise, src, onCallback }: useImageParams): {
   src: string | undefined;
   loading: boolean;
   error: any;
@@ -31,10 +32,12 @@ function useImage({ loadImg = imgPromise, src }: useImageParams): {
       .then((src) => {
         setLoading(false);
         setValue(src);
+        onCallback?.(src);
       })
       .catch((err) => {
         setLoading(false);
         setError(error);
+        onCallback?.(src, err);
       });
   }, [src]);
 

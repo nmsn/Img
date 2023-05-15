@@ -30,6 +30,8 @@ export default function Img({
     loadImg,
   });
 
+  console.log(loading);
+
   if (actualSrc) return <img src={actualSrc} {...imgProps} />;
   if (loading) return loader;
   if (error) return unloader;
