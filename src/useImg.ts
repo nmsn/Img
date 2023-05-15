@@ -1,80 +1,42 @@
 import { useEffect, useState } from "react";
 
-function imgPromise(src: string): Promise<void> {
+// TODO 使用 image 加载一遍，真实 img 还会加载么
+// decode
+function imgPromise(src: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const i = new Image();
-    i.onload = () => resolve();
+    i.onload = () => resolve(src);
     i.onerror = reject;
     i.src = src;
   });
 }
 
-function promiseFind(
-  sourceList: string[],
-  imgPromise: (src: string) => Promise<void>
-): Promise<string> {
-  let done = false;
-  return new Promise((resolve, reject) => {
-    const queueNext = (src: string) => {
-      return imgPromise(src).then(() => {
-        done = true;
-        resolve(src);
-      });
-    };
-
-    const firstPromise = queueNext(sourceList.shift() || "");
-
-    sourceList
-      .reduce((p, src) => {
-        return p.catch(() => {
-          if (!done) return queueNext(src);
-          return;
-        });
-      }, firstPromise)
-      .catch(reject);
-  });
-}
-
-const removeBlankArrayElements = (a: string[]) => a.filter((x) => x);
-
-const stringToArray = (x: string | string[]) => (Array.isArray(x) ? x : [x]);
-
-const cache: {
-  [key: string]: Promise<string>;
-} = {};
-
 export interface useImageParams {
-  loadImg?: (src: string) => Promise<void>;
-  srcList: string | string[];
+  loadImg?: (src: string) => Promise<string>;
+  src: string;
 }
 
-function useImage({ loadImg = imgPromise, srcList }: useImageParams): {
+function useImage({ loadImg = imgPromise, src }: useImageParams): {
   src: string | undefined;
   loading: boolean;
   error: any;
 } {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [value, setValue] = useState<string | undefined>(undefined);
 
-  const sourceList = removeBlankArrayElements(stringToArray(srcList));
-  const sourceKey = sourceList.join("");
-
   useEffect(() => {
-    if (!cache[sourceKey]) {
-      cache[sourceKey] = promiseFind(sourceList, loadImg);
-    }
-
-    cache[sourceKey]
+    setLoading(true);
+    loadImg(src)
       .then((src) => {
         setLoading(false);
         setValue(src);
       })
-      .catch((error) => {
+      .catch((err) => {
         setLoading(false);
         setError(error);
       });
-  }, [sourceKey]);
+  }, [src]);
 
   return { loading: loading, src: value, error: error };
 }

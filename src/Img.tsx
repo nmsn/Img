@@ -8,25 +8,29 @@ export type ImgProps = Omit<
   >,
   "src"
 > &
-  Omit<useImageParams, "srcList"> & {
-    src: useImageParams["srcList"];
+  Omit<useImageParams, "src"> & {
+    src: useImageParams["src"];
     loader?: JSX.Element | null;
     unloader?: JSX.Element | null;
   };
 
 export default function Img({
-  src: srcList,
+  src,
   loadImg,
   loader = null,
   unloader = null,
   ...imgProps
 }: ImgProps) {
-  const { src, loading, error } = useImage({
-    srcList,
+  const {
+    src: actualSrc,
+    loading,
+    error,
+  } = useImage({
+    src,
     loadImg,
   });
 
-  if (src) return <img src={src} {...imgProps} />;
+  if (actualSrc) return <img src={actualSrc} {...imgProps} />;
   if (loading) return loader;
   if (error) return unloader;
 
