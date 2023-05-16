@@ -6,8 +6,6 @@ const useIntersection = (
 ) => {
   const [state, setState] = useState(false);
 
-  // console.log(target, root);
-
   useEffect(() => {
     if (!target || !target.current) {
       return;

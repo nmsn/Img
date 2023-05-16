@@ -1,7 +1,7 @@
 {
-  "name": "img",
-  "version": "1.0.0",
-  "description": "",
+  "name": "ReactImg",
+  "version": "0.0.1",
+  "description": "React component for lazy loading images.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,9 +10,14 @@
     "type": "git",
     "url": "git+https://github.com/nmsn/Img.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "img",
+    "lazy-load",
+    "react",
+    "react-hooks"
+  ],
+  "author": "nmsn",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/nmsn/Img/issues"
   },
