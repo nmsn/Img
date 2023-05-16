@@ -1,5 +1,6 @@
-import React from "react";
-import useImage, { UseImageParamsType, ImgPromiseType } from "./useImg";
+import React, { useRef } from "react";
+import useImage, { UseImageParamsType } from "./useImg";
+import useIntersection from "./useIntersection";
 
 type ImgBaseProps = Omit<
   React.DetailedHTMLProps<
@@ -17,14 +18,22 @@ type ImgExtraProps = Omit<UseImageParamsType, "src"> & {
 
 export type ImgProps = ImgBaseProps & ImgExtraProps;
 
-export default function Img({
+const Img = ({
   src,
   loader = null,
   unloader = null,
   decode = false,
   crossOrigin = "",
+  width,
+  height,
   ...imgProps
-}: ImgProps) {
+}: ImgProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const [inView] = useIntersection(containerRef);
+
+  // console.log(inView, "in");
+
   const {
     src: actualSrc,
     loading,
@@ -33,11 +42,28 @@ export default function Img({
     src,
     decode,
     crossOrigin,
+    type: "lazy",
+    timing: inView,
   });
 
-  if (actualSrc) return <img src={actualSrc} {...imgProps} />;
-  if (loading) return loader;
-  if (error) return unloader;
+  return (
+    <div ref={containerRef} style={{ width, height }}>
+      {(() => {
+        if (actualSrc)
+          return (
+            <img
+              src={actualSrc}
+              style={{ width: "100%", height: "100%" }}
+              {...imgProps}
+            />
+          );
+        if (loading) return loader;
+        if (error) return unloader;
+      })()}
+    </div>
+  );
 
   return null;
-}
+};
+
+export default Img;

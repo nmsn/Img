@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export type ImgPromiseType = { decode?: boolean; crossOrigin?: string };
 
@@ -49,13 +49,16 @@ function useImage({
   const [error, setError] = useState(null);
   const [value, setValue] = useState<string | undefined>(undefined);
 
+  const valueChange = useRef<string>("");
+
   useEffect(() => {
-    if (type === "eager" && !value) {
+    if (type === "eager" && !valueChange.current) {
       setLoading(true);
       imgPromise(src, { decode, crossOrigin })
         .then((src) => {
           setLoading(false);
           setValue(src);
+          valueChange.current = src;
           onCallback?.(src);
         })
         .catch((err) => {
@@ -67,12 +70,13 @@ function useImage({
   }, [src]);
 
   useEffect(() => {
-    if (type === "lazy" && timing && !value) {
+    if (type === "lazy" && timing && !valueChange.current) {
       setLoading(true);
       imgPromise(src, { decode, crossOrigin })
         .then((src) => {
           setLoading(false);
           setValue(src);
+          valueChange.current = src;
           onCallback?.(src);
         })
         .catch((err) => {
