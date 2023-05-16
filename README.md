@@ -13,6 +13,8 @@ React component for lazy loading images.
 
 - [ ] Thumbnail option to show a low-resolution placeholder while loading the full image.
 - [ ] Use `Intersection Observer` for lazy loading and related configuration options.
+- [ ] Support `loading='lazy'` configuration.
+- [ ] Use the default image loading method if lazy loading is enabled.
 ## Issues
 
 When using `new Image` to preload the images before assigning it to the actual img element, the request is made again (even though it can be cached).
