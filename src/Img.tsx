@@ -1,6 +1,7 @@
-import React, { useRef } from "react";
+import React, { useRef, forwardRef } from "react";
 import useImage, { UseImageParamsType } from "./useImg";
 import useIntersection from "./useIntersection";
+import { LegacyRef } from "react";
 
 type ImgBaseProps = Omit<
   React.DetailedHTMLProps<
@@ -18,21 +19,23 @@ type ImgExtraProps = Omit<UseImageParamsType, "src"> & {
 
 export type ImgProps = ImgBaseProps & ImgExtraProps;
 
-const Img = ({
-  src,
-  loader = null,
-  unloader = null,
-  decode = false,
-  crossOrigin = "",
-  width,
-  height,
-  ...imgProps
-}: ImgProps) => {
+const Img = (
+  {
+    src,
+    loader = null,
+    unloader = null,
+    decode = false,
+    crossOrigin = "",
+    width,
+    height,
+    type,
+    ...imgProps
+  }: ImgProps,
+  ref: LegacyRef<HTMLImageElement> | undefined
+) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [inView] = useIntersection(containerRef);
-
-  // console.log(inView, "in");
 
   const {
     src: actualSrc,
@@ -42,7 +45,7 @@ const Img = ({
     src,
     decode,
     crossOrigin,
-    type: "lazy",
+    type,
     timing: inView,
   });
 
@@ -52,6 +55,7 @@ const Img = ({
         if (actualSrc)
           return (
             <img
+              ref={ref}
               src={actualSrc}
               style={{ width: "100%", height: "100%" }}
               {...imgProps}
@@ -62,8 +66,6 @@ const Img = ({
       })()}
     </div>
   );
-
-  return null;
 };
 
-export default Img;
+export default forwardRef<HTMLImageElement, ImgProps>(Img);

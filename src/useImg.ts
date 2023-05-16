@@ -2,8 +2,6 @@ import { useEffect, useState, useRef } from "react";
 
 export type ImgPromiseType = { decode?: boolean; crossOrigin?: string };
 
-// TODO 使用 image 加载一遍，真实 img 还会加载么
-// decode
 function imgPromise(src: string, options?: ImgPromiseType): Promise<string> {
   const { decode = false, crossOrigin = "" } = options || {};
   return new Promise((resolve, reject) => {
@@ -80,8 +78,9 @@ function useImage({
           onCallback?.(src);
         })
         .catch((err) => {
+          console.log(err);
           setLoading(false);
-          setError(error);
+          setError(err);
           onCallback?.(src, err);
         });
     }
